@@ -345,35 +345,80 @@ router.get('/me', authenticateToken, async (req: Request, res: Response, next: N
   }
 });
 
+// Helper to determine if Google strategy is loaded
+const isGoogleConfigured = (): boolean => {
+  const id = process.env.GOOGLE_CLIENT_ID;
+  const secret = process.env.GOOGLE_CLIENT_SECRET;
+  return !!(id && id !== 'your-google-client-id' && secret);
+};
+
+// Helper for cookie setting and redirection
+const handleSuccessfulGoogleLogin = (user: any, res: Response) => {
+  const refreshToken = generateRefreshToken({ id: user.id });
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  const accessToken = generateAccessToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+  });
+
+  res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);
+};
+
 // Passport Google Auth handlers
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  if (isGoogleConfigured()) {
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+  } else {
+    console.log('🔄 Simulating mock Google sign-in redirect...');
+    res.redirect(`/api/auth/google/callback?mock=true`);
+  }
+});
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req: any, res: Response) => {
-    if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=GoogleAuthFailed`);
+  (req: any, res: Response, next: NextFunction) => {
+    if (isGoogleConfigured()) {
+      passport.authenticate('google', { session: false }, (err: any, user: any) => {
+        if (err || !user) {
+          return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=GoogleAuthFailed`);
+        }
+        handleSuccessfulGoogleLogin(user, res);
+      })(req, res, next);
+    } else if (req.query.mock === 'true') {
+      const handleMockLogin = async () => {
+        try {
+          const email = "mockuser@gmail.com";
+          let user = await prisma.user.findUnique({ where: { email } });
+          if (!user) {
+            const count = await prisma.user.count();
+            user = await prisma.user.create({
+              data: {
+                name: "Google Mock User",
+                email,
+                avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=mock-google",
+                provider: AuthProvider.GOOGLE,
+                verified: true,
+                role: count === 0 ? Role.ADMIN : Role.USER,
+              },
+            });
+          }
+          handleSuccessfulGoogleLogin(user, res);
+        } catch (error) {
+          next(error);
+        }
+      };
+      handleMockLogin();
+    } else {
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=GoogleAuthFailed`);
     }
-
-    // Sign refresh token
-    const refreshToken = generateRefreshToken({ id: req.user.id });
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    const accessToken = generateAccessToken({
-      id: req.user.id,
-      email: req.user.email,
-      role: req.user.role,
-      name: req.user.name,
-    });
-
-    // Redirect to frontend token receiver page or dashboard
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);
   }
 );
 
