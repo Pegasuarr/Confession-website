@@ -140,6 +140,7 @@ export const sendPasswordResetEmail = async (toEmail: string, name: string, toke
 export const sendResponseNotificationEmail = async (
   toEmail: string,
   senderName: string,
+  senderAvatar: string | null,
   recipientAnswer: 'YES' | 'NO',
   originalMessage: string | null,
   _slug: string
@@ -164,7 +165,13 @@ export const sendResponseNotificationEmail = async (
           <img src="${isYes ? 'https://img.icons8.com/fluency/96/hearts.png' : 'https://img.icons8.com/fluency/96/broken-heart.png'}" alt="CrushLink" style="width: 64px; height: 64px;" />
         </div>
         <h2 style="color: ${headerColor}; text-align: center; font-size: 24px; font-weight: bold; margin-top: 0;">New CrushLink Response! ${emoji}</h2>
-        <p style="font-size: 16px; color: #4a4a4a;">Hi ${senderName},</p>
+        
+        <div style="margin-bottom: 20px; line-height: 44px; min-height: 44px;">
+          <img src="${senderAvatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=crushlink'}" alt="${senderName}" style="width: 44px; height: 44px; border-radius: 50%; float: left; margin-right: 12px; border: 2px solid #f0f0f0; vertical-align: middle;" />
+          <span style="font-size: 16px; color: #4a4a4a; font-weight: bold; vertical-align: middle; line-height: 44px;">Hi ${senderName},</span>
+          <div style="clear: both;"></div>
+        </div>
+
         <p style="font-size: 16px; color: #4a4a4a;">Someone just answered your CrushLink query!</p>
         
         <div style="background-color: #fcf8fa; border-left: 4px solid ${headerColor}; padding: 15px; margin: 20px 0; border-radius: 4px;">

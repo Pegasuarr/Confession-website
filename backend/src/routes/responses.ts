@@ -30,6 +30,7 @@ router.post(
             select: {
               name: true,
               email: true,
+              avatar: true,
             },
           },
         },
@@ -77,6 +78,7 @@ router.post(
       sendResponseNotificationEmail(
         link.user.email,
         link.user.name,
+        link.user.avatar,
         answer,
         link.message,
         slug

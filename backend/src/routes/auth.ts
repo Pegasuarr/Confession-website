@@ -76,6 +76,7 @@ router.post(
           name,
           email,
           password: hashedPassword,
+          avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name || email)}`,
           provider: AuthProvider.LOCAL,
           verified: process.env.NODE_ENV !== 'production',
           verificationToken,
