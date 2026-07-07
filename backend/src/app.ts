@@ -17,6 +17,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust proxy for express-rate-limit to work correctly on Render
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet({
   crossOriginResourcePolicy: false, // Essential for loading user avatars or assets in development
