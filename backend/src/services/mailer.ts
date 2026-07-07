@@ -69,7 +69,10 @@ export const sendVerificationEmail = async (toEmail: string, name: string, token
     text: `Hi ${name},\n\nPlease verify your email by clicking the following link:\n${verificationLink}\n\nThank you!\nCrushLink Team`,
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2 style="color: #FF4D8D; text-align: center; font-size: 24px; font-weight: bold;">Verify Your Email 💖</h2>
+        <div style="text-align: center; margin-bottom: 15px;">
+          <img src="https://img.icons8.com/fluency/96/hearts.png" alt="CrushLink" style="width: 64px; height: 64px;" />
+        </div>
+        <h2 style="color: #FF4D8D; text-align: center; font-size: 24px; font-weight: bold; margin-top: 0;">Verify Your Email 💖</h2>
         <p style="font-size: 16px; color: #4a4a4a;">Hi ${name},</p>
         <p style="font-size: 16px; color: #4a4a4a; line-height: 1.5;">Welcome to CrushLink! We are excited to help you find out if your crush likes you back. Please confirm your email address by clicking the button below:</p>
         <div style="text-align: center; margin: 30px 0;">
@@ -106,7 +109,10 @@ export const sendPasswordResetEmail = async (toEmail: string, name: string, toke
     text: `Hi ${name},\n\nYou requested a password reset. Reset your password by clicking this link:\n${resetLink}\n\nThis link is valid for 1 hour.\n\nCrushLink Team`,
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2 style="color: #9D4EDD; text-align: center; font-size: 24px; font-weight: bold;">Reset Your Password 🔒</h2>
+        <div style="text-align: center; margin-bottom: 15px;">
+          <img src="https://img.icons8.com/fluency/96/lock.png" alt="Reset Password" style="width: 64px; height: 64px;" />
+        </div>
+        <h2 style="color: #9D4EDD; text-align: center; font-size: 24px; font-weight: bold; margin-top: 0;">Reset Your Password 🔒</h2>
         <p style="font-size: 16px; color: #4a4a4a;">Hi ${name},</p>
         <p style="font-size: 16px; color: #4a4a4a; line-height: 1.5;">You requested a password reset for your CrushLink account. Click the button below to specify a new password. This link is valid for 1 hour.</p>
         <div style="text-align: center; margin: 30px 0;">
@@ -154,7 +160,10 @@ export const sendResponseNotificationEmail = async (
     text: `Hi ${senderName},\n\nSomeone responded to your CrushLink! \n\nAnswer: ${recipientAnswer}\nOriginal Message: "${originalMessage || 'No anonymous message'}"\n\nCheck your dashboard here:\n${dashboardLink}\n\nCrushLink Team`,
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2 style="color: ${headerColor}; text-align: center; font-size: 24px; font-weight: bold;">New CrushLink Response! ${emoji}</h2>
+        <div style="text-align: center; margin-bottom: 15px;">
+          <img src="${isYes ? 'https://img.icons8.com/fluency/96/hearts.png' : 'https://img.icons8.com/fluency/96/broken-heart.png'}" alt="CrushLink" style="width: 64px; height: 64px;" />
+        </div>
+        <h2 style="color: ${headerColor}; text-align: center; font-size: 24px; font-weight: bold; margin-top: 0;">New CrushLink Response! ${emoji}</h2>
         <p style="font-size: 16px; color: #4a4a4a;">Hi ${senderName},</p>
         <p style="font-size: 16px; color: #4a4a4a;">Someone just answered your CrushLink query!</p>
         
