@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Answer {
+  YES
+  NO
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+}
+
+model User {
+  id                 String       @id @default(uuid())
+  name               String
+  email              String       @unique
+  password           String?      // Nullable for OAuth accounts
+  avatar             String?
+  provider           AuthProvider @default(LOCAL)
+  verified           Boolean      @default(false)
+  verificationToken  String?
+  resetToken         String?
+  resetTokenExpires  DateTime?
+  role               Role         @default(USER)
+  banned             Boolean      @default(false)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  links              Link[]
+}
+
+model Link {
+  id                 String       @id @default(uuid())
+  userId             String
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String?
+  message            String?      // Optional anonymous message shown to the recipient
+  slug               String       @unique // E.g. ABC123XYZ
+  expiresAt          DateTime?
+  multipleResponses  Boolean      @default(true)
+  visits             Int          @default(0)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  responses          Response[]
+}
+
+model Response {
+  id        String   @id @default(uuid())
+  linkId    String
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  answer    Answer
+  ipHash    String   // Hashed IP to prevent multiple submissions if disabled
+  createdAt DateTime @default(now())
+}

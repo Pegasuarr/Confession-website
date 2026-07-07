@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply transition-colors duration-300 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-panel {
+  background: rgba(24, 20, 44, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Background Gradients */
+.gradient-bg {
+  background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%);
+}
+
+.dark .gradient-bg {
+  background: radial-gradient(circle at top right, #251635 0%, #0F0C1B 100%);
+}
+
+/* Recipient Heart Gradient and floaters */
+.recipient-gradient {
+  background: linear-gradient(135deg, #FFF0F6 0%, #F3E8FF 100%);
+}
+
+.dark .recipient-gradient {
+  background: linear-gradient(135deg, #1C0A21 0%, #0B0713 100%);
+}
+
+/* Floating Hearts Animation */
+@keyframes floatUp {
+  0% {
+    transform: translateY(105vh) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-heart {
+  position: fixed;
+  bottom: 0;
+  color: #FF4D8D;
+  pointer-events: none;
+  animation: floatUp 8s linear infinite;
+  z-index: 0;
+}
+
+/* Shimmer Loading Skeleton */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f3f3f3 25%, #ececec 50%, #f3f3f3 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1e1933 25%, #2a2347 50%, #1e1933 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(157, 78, 221, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 77, 141, 0.4);
+}
