@@ -56,6 +56,13 @@ const initTransporter = async () => {
   return transporter;
 };
 
+// Helper to construct a standard "Name <email>" sender header
+const getFromAddress = () => {
+  const name = process.env.SMTP_FROM || 'Crush Link';
+  const email = process.env.SMTP_USER || 'no-reply@crushlink.com';
+  return `"${name}" <${email}>`;
+};
+
 // Send verification email
 export const sendVerificationEmail = async (toEmail: string, name: string, token: string) => {
   const mailClient = await initTransporter();
@@ -63,7 +70,7 @@ export const sendVerificationEmail = async (toEmail: string, name: string, token
   const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
 
   const mailOptions = {
-    from: process.env.SMTP_FROM || 'no-reply@crushlink.com',
+    from: getFromAddress(),
     to: toEmail,
     subject: 'Verify your CrushLink Account 💖',
     text: `Hi ${name},\n\nPlease verify your email by clicking the following link:\n${verificationLink}\n\nThank you!\nCrushLink Team`,
@@ -103,7 +110,7 @@ export const sendPasswordResetEmail = async (toEmail: string, name: string, toke
   const resetLink = `${frontendUrl}/reset-password?token=${token}`;
 
   const mailOptions = {
-    from: process.env.SMTP_FROM || 'no-reply@crushlink.com',
+    from: getFromAddress(),
     to: toEmail,
     subject: 'Reset your CrushLink Password 🔒',
     text: `Hi ${name},\n\nYou requested a password reset. Reset your password by clicking this link:\n${resetLink}\n\nThis link is valid for 1 hour.\n\nCrushLink Team`,
@@ -155,7 +162,7 @@ export const sendResponseNotificationEmail = async (
   const responseText = isYes ? 'YES! They like you! 😍' : 'NO. They want to be friends. 🥺';
 
   const mailOptions = {
-    from: process.env.SMTP_FROM || 'no-reply@crushlink.com',
+    from: getFromAddress(),
     to: toEmail,
     subject: `New CrushLink Response: ${recipientAnswer}! ${emoji}`,
     text: `Hi ${senderName},\n\nSomeone responded to your CrushLink! \n\nAnswer: ${recipientAnswer}\nOriginal Message: "${originalMessage || 'No anonymous message'}"\n\nCheck your dashboard here:\n${dashboardLink}\n\nCrushLink Team`,
