@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Link2,
   Heart,
@@ -27,6 +27,8 @@ interface ResponseItem {
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const [toast, setToast] = useState<{ id: string; title: string; answer: 'YES' | 'NO' } | null>(null);
+  const prevResponsesRef = useRef<any[]>([]);
 
   // Fetch all user links containing nested responses
   const { data, isLoading } = useQuery({
@@ -35,9 +37,53 @@ export const Dashboard: React.FC = () => {
       const response = await api.get('/links');
       return response.data.links;
     },
+    refetchInterval: 5000, // Poll DB every 5 seconds for real-time alerts
   });
 
   const links = data || [];
+
+  useEffect(() => {
+    if (!data) return;
+    
+    // Extract flat list of responses
+    const currentResponses = data.flatMap((l: any) =>
+      l.responses.map((r: any) => ({
+        ...r,
+        linkTitle: l.title || `Slug: ${l.slug}`,
+      }))
+    );
+
+    // If we have previous responses, check if there are new ones
+    if (prevResponsesRef.current.length > 0 && currentResponses.length > prevResponsesRef.current.length) {
+      const prevIds = new Set(prevResponsesRef.current.map((r: any) => r.id));
+      const newResponses = currentResponses.filter((r: any) => !prevIds.has(r.id));
+
+      if (newResponses.length > 0) {
+        const latestNew = newResponses[0];
+        setToast({
+          id: latestNew.id,
+          title: latestNew.linkTitle,
+          answer: latestNew.answer,
+        });
+
+        // Play Notification Sound
+        try {
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-200.wav');
+          audio.volume = 0.4;
+          audio.play();
+        } catch (err) {
+          console.log('Audio playback blocked', err);
+        }
+
+        // Auto-dismiss
+        setTimeout(() => {
+          setToast((curr) => curr?.id === latestNew.id ? null : curr);
+        }, 6000);
+      }
+    }
+
+    prevResponsesRef.current = currentResponses;
+  }, [data]);
 
   // Compute metrics
   const totalLinks = links.length;
@@ -241,6 +287,36 @@ export const Dashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Real-time Notification Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-6 right-6 z-50 max-w-sm w-full bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-xl shadow-2xl p-4 flex gap-3 overflow-hidden cursor-pointer"
+            onClick={() => setToast(null)}
+          >
+            <div className={`h-11 w-11 rounded-full flex items-center justify-center flex-shrink-0 ${
+              toast.answer === 'YES' 
+                ? 'bg-rose-500/10 text-rose-500' 
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+            }`}>
+              <Heart className={`h-6 w-6 ${toast.answer === 'YES' ? 'fill-rose-500' : ''}`} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-bold text-gray-900 dark:text-white">New response received!</h4>
+              <p className="text-xs text-gray-400 truncate mt-0.5">{toast.title}</p>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-1">
+                Answer: <span className={toast.answer === 'YES' ? 'text-rose-500 font-extrabold' : 'text-gray-500 font-extrabold'}>
+                  {toast.answer === 'YES' ? 'YES! 😍' : 'NO 🥺'}
+                </span>
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
