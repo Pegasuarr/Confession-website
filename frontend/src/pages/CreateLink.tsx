@@ -33,6 +33,13 @@ export const CreateLink: React.FC = () => {
   const [createdLink, setCreatedLink] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const getMinDatetime = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 16);
+  };
+
   const {
     register,
     handleSubmit,
@@ -230,6 +237,7 @@ export const CreateLink: React.FC = () => {
               <input
                 type="datetime-local"
                 {...register('expiresAt')}
+                min={getMinDatetime()}
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white/50 dark:bg-dark-card/50 focus:border-brand-pink focus:ring-1 focus:ring-brand-pink transition outline-none"
               />
             </div>
