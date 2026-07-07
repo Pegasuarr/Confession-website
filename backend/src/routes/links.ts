@@ -50,6 +50,18 @@ router.post(
       }
 
       const { title, message, expiresAt, multipleResponses } = req.body;
+
+      if (expiresAt) {
+        const expiryDate = new Date(expiresAt);
+        if (expiryDate <= new Date()) {
+          res.status(400).json({
+            status: 'error',
+            message: 'Expiration date must be in the future.',
+          });
+          return;
+        }
+      }
+
       const slug = await generateSlug();
 
       const newLink = await prisma.link.create({

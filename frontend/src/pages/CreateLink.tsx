@@ -32,6 +32,7 @@ export const CreateLink: React.FC = () => {
   const queryClient = useQueryClient();
   const [createdLink, setCreatedLink] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
 
   const getMinDatetime = () => {
     const now = new Date();
@@ -79,6 +80,14 @@ export const CreateLink: React.FC = () => {
   });
 
   const onSubmit = (data: CreateLinkFormInputs) => {
+    setClientError(null);
+    if (data.expiresAt) {
+      const parsed = new Date(data.expiresAt);
+      if (parsed <= new Date()) {
+        setClientError("Expiration date must be in the future.");
+        return;
+      }
+    }
     mutation.mutate(data);
   };
 
@@ -187,9 +196,9 @@ export const CreateLink: React.FC = () => {
       ) : (
         /* Create Form View */
         <form onSubmit={handleSubmit(onSubmit)} className="glass-panel p-6 rounded-card border border-white/60 dark:border-white/5 shadow-premium space-y-6">
-          {mutation.isError && (
+          {(mutation.isError || clientError) && (
             <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 p-3.5 rounded-xl text-sm font-medium text-center">
-              {(mutation.error as any)?.response?.data?.message || 'Failed to generate link. Please check your inputs.'}
+              {clientError || (mutation.error as any)?.response?.data?.message || 'Failed to generate link. Please check your inputs.'}
             </div>
           )}
           {/* Link Title */}
