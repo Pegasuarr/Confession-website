@@ -23,10 +23,33 @@ app.use(helmet({
 }));
 
 // CORS configuration
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
+// Remove trailing slashes from allowed origins
+const cleanedOrigins = allowedOrigins.map((url) => url.replace(/\/$/, ''));
+
 app.use(
   cors({
-    origin: frontendUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      const cleanedOrigin = origin.replace(/\/$/, '');
+      const isAllowed = 
+        cleanedOrigins.includes(cleanedOrigin) || 
+        cleanedOrigin.endsWith('.vercel.app');
+        
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
