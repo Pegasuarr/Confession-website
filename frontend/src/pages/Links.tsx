@@ -26,6 +26,7 @@ export const Links: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [qrSlug, setQrSlug] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
 
   // Fetch Links
@@ -47,6 +48,17 @@ export const Links: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-links'] });
       setDeleteId(null);
+    },
+  });
+
+  // Delete All Links Mutation
+  const deleteAllMutation = useMutation({
+    mutationFn: async () => {
+      await api.delete('/links');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-links'] });
+      setShowDeleteAllConfirm(false);
     },
   });
 
@@ -97,12 +109,22 @@ export const Links: React.FC = () => {
           <h2 className="text-3xl font-extrabold tracking-tight font-display">My CrushLinks</h2>
           <p className="text-gray-500 dark:text-gray-400">Create, monitor, and delete your shared confession routes.</p>
         </div>
-        <Link
-          to="/dashboard/create"
-          className="bg-gradient-to-r from-brand-pink to-brand-purple hover:shadow-premium text-white font-bold px-5 py-3 rounded-xl transition shadow-sm"
-        >
-          Create Link
-        </Link>
+        <div className="flex items-center gap-3">
+          {links.length > 0 && (
+            <button
+              onClick={() => setShowDeleteAllConfirm(true)}
+              className="border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold px-5 py-3 rounded-xl transition"
+            >
+              Delete All
+            </button>
+          )}
+          <Link
+            to="/dashboard/create"
+            className="bg-gradient-to-r from-brand-pink to-brand-purple hover:shadow-premium text-white font-bold px-5 py-3 rounded-xl transition shadow-sm"
+          >
+            Create Link
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -364,6 +386,45 @@ export const Links: React.FC = () => {
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition"
                 >
                   {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete All Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteAllConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="bg-white dark:bg-dark-card p-6 rounded-card max-w-sm w-full border border-gray-100 dark:border-dark-border shadow-2xl space-y-4"
+            >
+              <h3 className="text-xl font-bold text-red-500">Delete All CrushLinks?</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Are you sure you want to delete all your links? This will permanently delete every link and all responses you have received. This action cannot be undone.
+              </p>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowDeleteAllConfirm(false)}
+                  className="flex-1 border border-gray-200 dark:border-dark-border hover:bg-gray-100 dark:hover:bg-dark-border/40 font-semibold py-3 px-4 rounded-xl transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => deleteAllMutation.mutate()}
+                  disabled={deleteAllMutation.isPending}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition"
+                >
+                  {deleteAllMutation.isPending ? 'Deleting All...' : 'Delete All'}
                 </button>
               </div>
             </motion.div>

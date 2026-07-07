@@ -153,6 +153,31 @@ router.get(
   }
 );
 
+// Delete All User's Links (Protected)
+router.delete(
+  '/',
+  authenticateToken,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ status: 'error', message: 'Unauthorized' });
+        return;
+      }
+
+      const deletedCount = await prisma.link.deleteMany({
+        where: { userId: req.user.id },
+      });
+
+      res.status(200).json({
+        status: 'success',
+        message: `Successfully deleted all links (${deletedCount.count} links removed)`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // Delete Link (Protected)
 router.delete(
   '/:id',
