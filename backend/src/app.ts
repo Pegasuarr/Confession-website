@@ -34,9 +34,10 @@ const cleanedOrigins = allowedOrigins.map((url) => url.replace(/\/$/, ''));
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, postman)
+      // Direct requests (like Render health check HEAD/GET or curl) won't have an origin header.
+      // We return false to disable CORS headers for these non-cross-origin requests.
       if (!origin) {
-        return callback(null, true);
+        return callback(null, false);
       }
       
       const cleanedOrigin = origin.replace(/\/$/, '');
@@ -45,7 +46,7 @@ app.use(
         cleanedOrigin.endsWith('.vercel.app');
         
       if (isAllowed) {
-        callback(null, true);
+        callback(null, origin); // Echo the exact origin string back
       } else {
         callback(new Error('Not allowed by CORS'));
       }
