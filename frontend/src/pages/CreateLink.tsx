@@ -84,7 +84,12 @@ export const CreateLink: React.FC = () => {
     if (data.expiresAt) {
       const parsed = new Date(data.expiresAt);
       if (parsed <= new Date()) {
-        setClientError("Expiration date must be in the future.");
+        const isToday = parsed.toDateString() === new Date().toDateString();
+        if (isToday) {
+          setClientError("You selected today's date. Please specify a future time (e.g. later today or tomorrow).");
+        } else {
+          setClientError("Expiration date must be in the future.");
+        }
         return;
       }
     }
@@ -250,6 +255,7 @@ export const CreateLink: React.FC = () => {
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white/50 dark:bg-dark-card/50 focus:border-brand-pink focus:ring-1 focus:ring-brand-pink transition outline-none"
               />
             </div>
+            <p className="text-xs text-gray-400 pl-1">Leave blank to never expire. If set, must be a future time.</p>
           </div>
 
           {/* Multiple Responses Checkbox */}
