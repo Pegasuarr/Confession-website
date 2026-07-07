@@ -44,11 +44,6 @@ export const Register: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    window.location.href = `${backendUrl}/auth/google`;
-  };
-
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -123,30 +118,6 @@ export const Register: React.FC = () => {
           {loading ? 'Creating Account...' : 'Sign Up'}
         </button>
       </form>
-
-      <div className="relative flex py-2 items-center">
-        <div className="flex-grow border-t border-gray-200 dark:border-dark-border"></div>
-        <span className="flex-shrink mx-4 text-gray-400 text-xs font-semibold uppercase">Or continue with</span>
-        <div className="flex-grow border-t border-gray-200 dark:border-dark-border"></div>
-      </div>
-
-      {/* Google Sign-in */}
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        className="w-full border border-gray-200 dark:border-dark-border hover:bg-gray-100 dark:hover:bg-dark-card/30 font-semibold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2"
-      >
-        <svg className="h-5 w-5" viewBox="0 0 24 24" width="24" height="24">
-          <g transform="matrix(1, 0, 0, 1, 0, 0)">
-            <path
-              d="M21.35,11.1H12v2.7h5.38C16.88,15.75,14.73,17,12,17c-2.76,0-5-2.24-5-5s2.24-5,5-5c1.21,0,2.3.43,3.15,1.18l2.1-2.1C15.8,4.78,14,4,12,4,7.58,4,4,7.58,4,12s3.58,8,8,8c4.15,0,7.9-2.97,7.9-8C19.9,11.75,19.78,11.41,21.35,11.1Z"
-              fill="#EA4335"
-              className="fill-rose-500"
-            />
-          </g>
-        </svg>
-        Sign Up with Google
-      </button>
 
       <p className="text-sm text-center text-gray-500 dark:text-gray-400">
         Already have an account?{' '}
