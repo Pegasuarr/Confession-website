@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 export const NotFound: React.FC = () => {
   return (

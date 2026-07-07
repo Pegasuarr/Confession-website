@@ -10,20 +10,11 @@ import {
   Eye,
   MessageCircle,
   Plus,
-  Calendar,
   Activity,
   ArrowUpRight
 } from 'lucide-react';
 
-interface ResponseItem {
-  id: string;
-  answer: 'YES' | 'NO';
-  createdAt: string;
-  link: {
-    title: string | null;
-    slug: string;
-  };
-}
+
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -245,7 +236,7 @@ export const Dashboard: React.FC = () => {
 
           <div className="flex-1 mt-6 space-y-4 max-h-[300px] overflow-y-auto pr-1">
             {allResponses.length > 0 ? (
-              allResponses.slice(0, 10).map((resp: any, i: number) => (
+              allResponses.slice(0, 10).map((resp: any) => (
                 <div key={resp.id} className="flex items-start justify-between p-3.5 rounded-xl bg-white/40 dark:bg-dark-card/40 border border-gray-100 dark:border-dark-border">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-xl ${

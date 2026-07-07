@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Heart, Sparkles, Send, ShieldCheck, Mail, Sun, Moon, ArrowRight } from 'lucide-react';
+import { Heart, Sparkles, Send, ShieldCheck, Sun, Moon, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Home: React.FC = () => {
@@ -152,7 +152,7 @@ export const Home: React.FC = () => {
       <section id="features" className="w-full max-w-6xl mx-auto px-6 py-20 z-10 border-t border-gray-100 dark:border-dark-border/40">
         <h2 className="text-3xl font-bold text-center mb-16">Everything you need to find the truth</h2>
         
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="glass-panel p-8 rounded-card border border-white/60 dark:border-white/5 space-y-4">
             <div className="p-3 bg-pink-100 dark:bg-pink-950/20 text-brand-pink w-fit rounded-2xl">
               <Send className="h-6 w-6" />
@@ -160,16 +160,6 @@ export const Home: React.FC = () => {
             <h3 className="text-xl font-bold">Unlimited Shareable Links</h3>
             <p className="text-gray-500 dark:text-gray-400">
               Create unique customized links for different crushes, specify anonymous messages, and toggles.
-            </p>
-          </div>
-
-          <div className="glass-panel p-8 rounded-card border border-white/60 dark:border-white/5 space-y-4">
-            <div className="p-3 bg-purple-100 dark:bg-purple-950/20 text-brand-purple w-fit rounded-2xl">
-              <Mail className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-bold">Real-time Email Alerts</h3>
-            <p className="text-gray-500 dark:text-gray-400">
-              Get email notifications immediately when someone votes, containing details of their choice.
             </p>
           </div>
 

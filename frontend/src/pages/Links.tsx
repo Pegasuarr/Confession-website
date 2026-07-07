@@ -8,11 +8,8 @@ import {
   Check,
   QrCode,
   Trash2,
-  Calendar,
-  Layers,
   Heart,
   Eye,
-  MessageSquareCode,
   Download,
   X,
   ExternalLink,
@@ -120,8 +117,7 @@ export const Links: React.FC = () => {
     if (!svg) return;
     const svgString = new XMLSerializer().serializeToString(svg);
     const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const URL = window.URL || window.webkitURL || window;
-    const blobURL = URL.createObjectURL(svgBlob);
+    const blobURL = window.URL.createObjectURL(svgBlob);
     
     const imageLink = document.createElement('a');
     imageLink.href = blobURL;
@@ -180,7 +176,6 @@ export const Links: React.FC = () => {
             const shareUrl = `${window.location.origin}/c/${link.slug}`;
             const totalResponses = link.responses?.length || 0;
             const yesCount = link.responses?.filter((r: any) => r.answer === 'YES').length || 0;
-            const noCount = link.responses?.filter((r: any) => r.answer === 'NO').length || 0;
             const isExpanded = expandedLinkId === link.id;
 
             return (

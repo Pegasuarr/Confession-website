@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import confetti from 'canvas-confetti';
 import { Heart, MailOpen, Mail, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+
 
 interface LinkDetails {
   id: string;
@@ -20,7 +20,6 @@ interface LinkDetails {
 
 export const Recipient: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { theme } = useTheme();
   const [linkDetails, setLinkDetails] = useState<LinkDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

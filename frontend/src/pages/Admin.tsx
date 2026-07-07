@@ -11,10 +11,8 @@ import {
   UserX,
   UserCheck,
   Search,
-  Activity,
-  Heart
+  Activity
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export const Admin: React.FC = () => {
   const { user } = useAuth();

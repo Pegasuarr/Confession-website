@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,8 +8,6 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
-  Calendar,
-  Layers,
   Copy,
   Check,
   Download,
@@ -27,7 +25,6 @@ const createLinkSchema = z.object({
 type CreateLinkFormInputs = z.infer<typeof createLinkSchema>;
 
 export const CreateLink: React.FC = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [createdLink, setCreatedLink] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
@@ -78,8 +75,7 @@ export const CreateLink: React.FC = () => {
     if (!svg) return;
     const svgString = new XMLSerializer().serializeToString(svg);
     const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const URL = window.URL || window.webkitURL || window;
-    const blobURL = URL.createObjectURL(svgBlob);
+    const blobURL = window.URL.createObjectURL(svgBlob);
     
     const imageLink = document.createElement('a');
     imageLink.href = blobURL;
