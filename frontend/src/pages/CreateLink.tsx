@@ -46,11 +46,19 @@ export const CreateLink: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: CreateLinkFormInputs) => {
-      // Map empty inputs to null / format date
+      // Map empty inputs to null / format date safely
+      let formattedDate: string | null = null;
+      if (data.expiresAt) {
+        const parsed = new Date(data.expiresAt);
+        if (!isNaN(parsed.getTime())) {
+          formattedDate = parsed.toISOString();
+        }
+      }
+
       const payload = {
         title: data.title || undefined,
         message: data.message || undefined,
-        expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : null,
+        expiresAt: formattedDate,
         multipleResponses: data.multipleResponses,
       };
 
@@ -172,6 +180,11 @@ export const CreateLink: React.FC = () => {
       ) : (
         /* Create Form View */
         <form onSubmit={handleSubmit(onSubmit)} className="glass-panel p-6 rounded-card border border-white/60 dark:border-white/5 shadow-premium space-y-6">
+          {mutation.isError && (
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 p-3.5 rounded-xl text-sm font-medium text-center">
+              {(mutation.error as any)?.response?.data?.message || 'Failed to generate link. Please check your inputs.'}
+            </div>
+          )}
           {/* Link Title */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Link Title (Optional)</label>
