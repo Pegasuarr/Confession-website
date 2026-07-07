@@ -77,18 +77,22 @@ router.post(
           email,
           password: hashedPassword,
           provider: AuthProvider.LOCAL,
-          verified: false,
+          verified: process.env.NODE_ENV !== 'production',
           verificationToken,
           role,
         },
       });
 
-      // Send verification email asynchronously
-      sendVerificationEmail(user.email, user.name, verificationToken);
+      // Send verification email asynchronously if in production
+      if (process.env.NODE_ENV === 'production') {
+        sendVerificationEmail(user.email, user.name, verificationToken);
+      }
 
       res.status(201).json({
         status: 'success',
-        message: 'Registration successful. Please check your email to verify your account.',
+        message: process.env.NODE_ENV !== 'production'
+          ? 'Registration successful! (Auto-verified for local development)'
+          : 'Registration successful. Please check your email to verify your account.',
       });
     } catch (error) {
       next(error);
