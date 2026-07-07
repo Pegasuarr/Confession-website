@@ -7,6 +7,9 @@ RUN npm ci
 
 COPY frontend/ ./
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Pass VITE_API_URL during compile time if needed, otherwise it falls back to current domain origin/api
 RUN npm run build
 

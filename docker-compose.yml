@@ -45,6 +45,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_URL=/api
     container_name: crushlink-frontend
     restart: always
     ports:
