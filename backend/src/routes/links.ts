@@ -11,7 +11,6 @@ const createLinkSchema = z.object({
   body: z.object({
     title: z.string().max(100).optional(),
     message: z.string().max(500).optional(),
-    expiresAt: z.string().datetime().nullable().optional(),
     multipleResponses: z.boolean().optional(),
   }),
 });
@@ -49,19 +48,7 @@ router.post(
         return;
       }
 
-      const { title, message, expiresAt, multipleResponses } = req.body;
-
-      if (expiresAt) {
-        const expiryDate = new Date(expiresAt);
-        if (expiryDate <= new Date()) {
-          res.status(400).json({
-            status: 'error',
-            message: 'Expiration date must be in the future.',
-          });
-          return;
-        }
-      }
-
+      const { title, message, multipleResponses } = req.body;
       const slug = await generateSlug();
 
       const newLink = await prisma.link.create({
@@ -70,7 +57,7 @@ router.post(
           title: title || null,
           message: message || null,
           slug,
-          expiresAt: expiresAt ? new Date(expiresAt) : null,
+          expiresAt: null,
           multipleResponses: multipleResponses ?? true,
         },
       });
@@ -148,11 +135,7 @@ router.get(
         return;
       }
 
-      // Check expiration
-      if (link.expiresAt && new Date() > new Date(link.expiresAt)) {
-        res.status(410).json({ status: 'error', message: 'This link has expired' });
-        return;
-      }
+
 
       // Increment visits asynchronously
       await prisma.link.update({

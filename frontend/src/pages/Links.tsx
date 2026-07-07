@@ -77,10 +77,7 @@ export const Links: React.FC = () => {
     setExpandedLinkId(expandedLinkId === linkId ? null : linkId);
   };
 
-  const isLinkExpired = (expiresAt: string | null) => {
-    if (!expiresAt) return false;
-    return new Date() > new Date(expiresAt);
-  };
+
 
   if (isLoading) {
     return (
@@ -111,7 +108,7 @@ export const Links: React.FC = () => {
       <div className="space-y-4">
         {links.length > 0 ? (
           links.map((link: any) => {
-            const expired = isLinkExpired(link.expiresAt);
+            const expired = false;
             const shareUrl = `${window.location.origin}/c/${link.slug}`;
             const totalResponses = link.responses?.length || 0;
             const yesCount = link.responses?.filter((r: any) => r.answer === 'YES').length || 0;
@@ -222,11 +219,7 @@ export const Links: React.FC = () => {
                       <div className="p-6 space-y-4">
                         <div className="flex justify-between items-center text-xs font-semibold uppercase text-gray-400 tracking-wider">
                           <span>Responses List ({totalResponses})</span>
-                          {link.expiresAt && (
-                            <span className="flex items-center gap-1 normal-case font-medium">
-                              <Calendar className="h-3.5 w-3.5" /> Expires: {new Date(link.expiresAt).toLocaleDateString()}
-                            </span>
-                          )}
+
                         </div>
 
                         {totalResponses > 0 ? (

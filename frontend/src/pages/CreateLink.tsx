@@ -21,7 +21,6 @@ import {
 const createLinkSchema = z.object({
   title: z.string().max(100, 'Title cannot exceed 100 characters').optional(),
   message: z.string().max(500, 'Message cannot exceed 500 characters').optional(),
-  expiresAt: z.string().optional(),
   multipleResponses: z.boolean().default(true),
 });
 
@@ -32,14 +31,6 @@ export const CreateLink: React.FC = () => {
   const queryClient = useQueryClient();
   const [createdLink, setCreatedLink] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
-  const [clientError, setClientError] = useState<string | null>(null);
-
-  const getMinDatetime = () => {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60 * 1000);
-    return local.toISOString().slice(0, 16);
-  };
 
   const {
     register,
@@ -54,19 +45,9 @@ export const CreateLink: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: CreateLinkFormInputs) => {
-      // Map empty inputs to null / format date safely
-      let formattedDate: string | null = null;
-      if (data.expiresAt) {
-        const parsed = new Date(data.expiresAt);
-        if (!isNaN(parsed.getTime())) {
-          formattedDate = parsed.toISOString();
-        }
-      }
-
       const payload = {
         title: data.title || undefined,
         message: data.message || undefined,
-        expiresAt: formattedDate,
         multipleResponses: data.multipleResponses,
       };
 
@@ -80,19 +61,6 @@ export const CreateLink: React.FC = () => {
   });
 
   const onSubmit = (data: CreateLinkFormInputs) => {
-    setClientError(null);
-    if (data.expiresAt) {
-      const parsed = new Date(data.expiresAt);
-      if (parsed <= new Date()) {
-        const isToday = parsed.toDateString() === new Date().toDateString();
-        if (isToday) {
-          setClientError("You selected today's date. Please specify a future time (e.g. later today or tomorrow).");
-        } else {
-          setClientError("Expiration date must be in the future.");
-        }
-        return;
-      }
-    }
     mutation.mutate(data);
   };
 
@@ -201,9 +169,9 @@ export const CreateLink: React.FC = () => {
       ) : (
         /* Create Form View */
         <form onSubmit={handleSubmit(onSubmit)} className="glass-panel p-6 rounded-card border border-white/60 dark:border-white/5 shadow-premium space-y-6">
-          {(mutation.isError || clientError) && (
+          {mutation.isError && (
             <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 p-3.5 rounded-xl text-sm font-medium text-center">
-              {clientError || (mutation.error as any)?.response?.data?.message || 'Failed to generate link. Please check your inputs.'}
+              {(mutation.error as any)?.response?.data?.message || 'Failed to generate link. Please check your inputs.'}
             </div>
           )}
           {/* Link Title */}
@@ -243,20 +211,7 @@ export const CreateLink: React.FC = () => {
             )}
           </div>
 
-          {/* Expiration date */}
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Expiration Date (Optional)</label>
-            <div className="relative">
-              <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="datetime-local"
-                {...register('expiresAt')}
-                min={getMinDatetime()}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white/50 dark:bg-dark-card/50 focus:border-brand-pink focus:ring-1 focus:ring-brand-pink transition outline-none"
-              />
-            </div>
-            <p className="text-xs text-gray-400 pl-1">Leave blank to never expire. If set, must be a future time.</p>
-          </div>
+
 
           {/* Multiple Responses Checkbox */}
           <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-dark-border bg-white/30 dark:bg-dark-card/30">

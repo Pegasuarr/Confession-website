@@ -40,11 +40,7 @@ router.post(
         return;
       }
 
-      // Check link expiration
-      if (link.expiresAt && new Date() > new Date(link.expiresAt)) {
-        res.status(410).json({ status: 'error', message: 'This link has expired' });
-        return;
-      }
+
 
       // Hash the IP address to protect privacy but still enforce duplicate limits
       const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
