@@ -78,7 +78,7 @@ router.post(
           password: hashedPassword,
           avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name || email)}`,
           provider: AuthProvider.LOCAL,
-          verified: process.env.NODE_ENV !== 'production',
+          verified: true, // Verification disabled for instant signup/login
           verificationToken,
           role,
         },
@@ -162,7 +162,8 @@ router.post(
         return;
       }
 
-      // Check verification status
+      // Check verification status (disabled for simplified deployment)
+      /*
       if (!user.verified) {
         res.status(403).json({
           status: 'error',
@@ -171,6 +172,7 @@ router.post(
         });
         return;
       }
+      */
 
       // Compare passwords
       const isMatch = await bcrypt.compare(password, user.password);
